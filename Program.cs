@@ -179,7 +179,7 @@ namespace ATM_Application
         }
     }
 
-    public class Account
+    public class Account // created class and adding objects
     {
         public const int MaxTransactions = 100;
         public int TransactionCount { get; set; }
@@ -197,11 +197,11 @@ namespace ATM_Application
             AnnualInterestRate = annualInterestRate;
             InitialBalance = initialBalance;
             Transactions = new string[MaxTransactions];
-            Transactions[0] = $"Account created with initial balance: {initialBalance}";
+            Transactions[0] = $"Account created with initial balance: {initialBalance}"; // Creating array of transactions
             TransactionCount = 1;
         }
 
-        public void AddTransaction(string transaction)
+        public void AddTransaction(string transaction)    //ADDCOMMENT
         {
             if (TransactionCount <= MaxTransactions)
             {
@@ -213,31 +213,31 @@ namespace ATM_Application
                 Console.WriteLine("Transaction limit reached. Cannot add more transactions.");
             }
         }
-    }
+    }// Class Account created
     public class Bank
     {
-        private const int MaxAccounts = 100;
+        private const int MaxAccounts = 100; // Maximum account limit set to 100
         private int accountCount;
         private Account[] accounts;
       
 
-        public Bank()
+        public Bank() // Class bank created
         {
             accounts = new Account[MaxAccounts];
             accountCount = 0;
-            CreateDefaultAccounts();
+            CreateDefaultAccounts(); // Default account created and count to be set
         }
 
         private void CreateDefaultAccounts()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++) // 10 default account is created 
             {
-                accounts[accountCount] = new Account(100 + i, 100, 2.5);
+                accounts[accountCount] = new Account(100 + i, 100, 2.5); // account number will start from 100 and increment to 10 accounts 
                 accountCount++;
             }
         }
 
-        public void AddAccount(Account newAccount)
+        public void AddAccount(Account newAccount) // To limit maximum account limit to 100
         {
             if (accountCount < MaxAccounts)
             {
@@ -245,7 +245,7 @@ namespace ATM_Application
             }
             else
             {
-                Console.WriteLine("Account limit reached. Cannot add more accounts.");
+                Console.WriteLine("Account limit reached. Cannot add more accounts."); 
             }
         }
 
