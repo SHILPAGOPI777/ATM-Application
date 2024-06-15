@@ -1,32 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ATM_Application
 {
     // ATM APPLICATION SHILPA GOPI 8893284
     internal class Program
     {
-        static List<Account> accounts = new List<Account>();
+        static Account[] accounts = new Account[100];
+        static int accountCount = 0;
 
         static void Main(string[] args)
         {
             while (true)
             {
-                Console.WriteLine("=====Welcome To ATM Application=====");
-                Console.WriteLine("Choose the following options by the number associated with it...!:");
+                Console.WriteLine("=====Welcome To ATM Application=====\n");
+                Console.WriteLine("Choose the following options by the number associated with it...!:\n");
 
-                Console.WriteLine("1. Create Account");
+                // Actions available, need user's input
+                Console.WriteLine("1. Create Account      2. Select Account      3. Exit ");
                 Console.WriteLine();
 
-                Console.WriteLine("2. Select Account");
-                Console.WriteLine();
-
-                Console.WriteLine("3. Exit");
-                Console.WriteLine();
-
-                Console.Write("==Please choose an option:== ");
+                Console.Write("==Please choose an option:== \n");
 
                 string choice = Console.ReadLine();
+
+                // actions for selecting each case
 
                 switch (choice)
                 {
@@ -46,51 +43,56 @@ namespace ATM_Application
             }
         }
 
-        static void CreateAccount()
+        static void CreateAccount() // Account details for new accounts
         {
-            Console.Write("Enter Account Holder's Name: /n");
+            Console.Write("Enter Account Holder's Name: \n");
             string accountName = Console.ReadLine();
 
             Console.Write("Enter Account Number (Between 100 to 1000): \n");
-            if (!int.TryParse(Console.ReadLine(), out int accountNumber))
+            string AccntNumString = Console.ReadLine();
+
+            if (!int.TryParse(AccntNumString, out int accountNumber))
             {
                 Console.WriteLine("Invalid account number. Please try again.");
                 return;
             }
 
-            Console.Write("Enter Annual Interest Rate ( should be bess than 3.0%): \n");
-            if (!double.TryParse(Console.ReadLine(), out double annualInterestRate))
+            Console.Write("Enter Annual Interest Rate (should be less than 3.0%): \n");
+            string IntRateString = Console.ReadLine();
+            if (!double.TryParse(IntRateString, out double annualInterestRate) || annualInterestRate >= 3.0)
             {
                 Console.WriteLine("Invalid interest rate. Please try again.");
                 return;
             }
 
-            Console.Write("Enter Initial Balance: /n");
-            if (!double.TryParse(Console.ReadLine(), out double initialBalance))
+            Console.Write("Enter Initial Balance: \n");
+            string InitBalString = Console.ReadLine();
+            if (!double.TryParse(InitBalString, out double initialBalance))
             {
                 Console.WriteLine("Invalid initial balance. Please try again.");
                 return;
             }
 
             Account newAccount = new Account(accountName, accountNumber, annualInterestRate, initialBalance);
-            accounts.Add(newAccount);
+            accounts[accountCount++] = newAccount;
 
             Console.WriteLine("====Account created successfully!====\n");
         }
 
         static void SelectAccount()
         {
-            Console.Write("Enter the account number to select: /n");
+            Console.Write("Enter the account number to select: \n");
             string accountNumberInput = Console.ReadLine();
 
             if (int.TryParse(accountNumberInput, out int accountNumber))
             {
-                Account selectedAccount = accounts.Find(a => a.AccountNumber == accountNumber);
+                Account selectedAccount = FindAccount(accountNumber);
 
                 if (selectedAccount != null)
                 {
-                    Console.WriteLine($"Account selected: {selectedAccount.AccountName} $\"Initial Balance: {{selectedAccount.InitialBalance}}");
-                    //Console.WriteLine($"Initial Balance: {selectedAccount.InitialBalance}");
+                    Console.WriteLine($"Welcome, {selectedAccount.AccountName}!");
+                    Console.WriteLine($"Account selected: {selectedAccount.AccountName}");
+                    Console.WriteLine($"Initial Balance: {selectedAccount.InitialBalance}");
                     AccountMenu(selectedAccount);
                 }
                 else
@@ -104,13 +106,25 @@ namespace ATM_Application
             }
         }
 
+        static Account FindAccount(int accountNumber)
+        {
+            for (int i = 0; i < accountCount; i++)
+            {
+                if (accounts[i].AccountNumber == accountNumber)
+                {
+                    return accounts[i];
+                }
+            }
+            return null;
+        }
+
         static void AccountMenu(Account account)
         {
             while (true)
             {
                 Console.WriteLine("=====Account Menu=====");
-                Console.WriteLine("a. Check Balance b. Deposi c.Withdraw d.Display Transactions e.Exit Account\n");
-               
+                Console.WriteLine("a. Check Balance      b. Deposit      c. Withdraw      d. Display Transactions      e. Exit Account\n");
+
                 Console.Write("==Please choose an option:== \n");
 
                 string choice = Console.ReadLine();
@@ -149,7 +163,7 @@ namespace ATM_Application
             if (double.TryParse(Console.ReadLine(), out double amount))
             {
                 account.InitialBalance += amount;
-                account.Transactions.Add($"Deposited: {amount}");
+                AddTransaction(account, $"Deposited: {amount}");
                 Console.WriteLine("Deposit successful!\n");
             }
             else
@@ -166,7 +180,7 @@ namespace ATM_Application
                 if (amount <= account.InitialBalance)
                 {
                     account.InitialBalance -= amount;
-                    account.Transactions.Add($"Withdrew: {amount}");
+                    AddTransaction(account, $"Withdrew: {amount}");
                     Console.WriteLine("Withdrawal successful!\n");
                 }
                 else
@@ -183,21 +197,37 @@ namespace ATM_Application
         static void DisplayTransactions(Account account)
         {
             Console.WriteLine("=====Transaction History=====");
-            foreach (var transaction in account.Transactions)
+            Console.WriteLine($"Annual Interest Rate: {account.AnnualInterestRate}%");
+            for (int i = 0; i < account.TransactionCount; i++)
             {
-                Console.WriteLine(transaction);
+                Console.WriteLine(account.Transactions[i]);
             }
             Console.WriteLine();
+        }
+
+        static void AddTransaction(Account account, string transaction)
+        {
+            if (account.TransactionCount < account.Transactions.Length)
+            {
+                account.Transactions[account.TransactionCount++] = transaction;
+            }
+            else
+            {
+                Console.WriteLine("Transaction limit reached. Cannot add more transactions.");
+            }
         }
     }
 
     public class Account
     {
+        private const int MaxTransactions = 100;
+
         public int AccountNumber { get; private set; }
         public string AccountName { get; private set; }
         public double AnnualInterestRate { get; private set; }
         public double InitialBalance { get; set; }
-        public List<string> Transactions { get; private set; }
+        public string[] Transactions { get; private set; }
+        public int TransactionCount { get; set; }
 
         public Account(string accountName, int accountNumber, double annualInterestRate, double initialBalance)
         {
@@ -205,7 +235,9 @@ namespace ATM_Application
             AccountNumber = accountNumber;
             AnnualInterestRate = annualInterestRate;
             InitialBalance = initialBalance;
-            Transactions = new List<string> { $"Account created with initial balance: {initialBalance}" };
+            Transactions = new string[MaxTransactions];
+            Transactions[0] = $"Account created with initial balance: {initialBalance}";
+            TransactionCount = 1;
         }
     }
 }
