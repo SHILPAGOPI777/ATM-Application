@@ -150,7 +150,8 @@ namespace ATM_Application
 
         static void CheckBalance(Account account) // To check current balance of the selected account. 
         {
-            Console.WriteLine($"Current Balance: {account.InitialBalance}\n");
+            Console.WriteLine($"Account Balance: {account.InitialBalance}\n");
+            account.AddTransaction($"Account Balance: {account.InitialBalance}");
         }
 
         static void Deposit(Account account) // To deposit amount to selected acccount 
