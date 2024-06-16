@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Threading;
 
 namespace ATM_Application
 {
     // ATM APPLICATION SHILPA GOPI 8893284
     internal class Program
     {
-      static Bank bank = new Bank();
+        static Bank bank = new Bank();
 
         static void Main(string[] args)
         {
-            while (true)
+
+            while (true) //To repeatedly call the following code until break
             {
                 Console.WriteLine("============= Welcome To ATM Application ============\n");
                 Console.WriteLine("        Choose An Option From The Following.!         \n");
                 Console.WriteLine("1. Create Account      2. Select Account      3. Exit ");
                 Console.WriteLine("\n===================================================== \n");
-                string choice = Console.ReadLine();
+                string userinput = Console.ReadLine(); // accept user input
 
-                switch (choice)
+                switch (userinput) //To check user input and decide action
                 {
                     case "1":
                         CreateAccount();
@@ -26,31 +28,51 @@ namespace ATM_Application
                         SelectAccount();
                         break;
                     case "3":
-                        Console.WriteLine("Exiting application. Goodbye!");
-                        return;
+                        if (ConfirmExit())
+                        {
+                            Console.WriteLine("Exiting application. Goodbye!");
+                            Thread.Sleep(3000); // Hold for 3 seconds before exiting
+                            return;
+                        }
+                        break;
                     default:
-                        Console.WriteLine("Invalid choice. Please try again.");
+                        Console.WriteLine("Invalid choice. Please try again."); // validation for invalid message
                         break;
                 }
             }
         }
 
-        static void CreateAccount()
+        static bool ConfirmExit() // true or false condition for exiting from application
         {
-            Console.Write("Enter Account Holder's Name: \n");
-            string accountName = Console.ReadLine();
+            Console.WriteLine("Do you want to exit? (y/n)");
+            string response = Console.ReadLine().ToLower();
 
-            Console.Write("Enter Account Number (Between 100 to 1000): \n");
-            string accountNumberStr = Console.ReadLine();
-            if (!int.TryParse(accountNumberStr, out int accountNumber) || accountNumber < 100 || accountNumber > 1000)
+            return response == "y"; //return true if the user input is y
+        }
+
+        static void CreateAccount() // Create new account procedures
+        {
+            Console.Write("Enter Account Holder's Name: \n"); 
+            string accountName = Console.ReadLine();// Read the account name from user
+
+            Console.Write("Enter Account Number (Between 100 to 1000): \n"); //
+            string accountNumberStr = Console.ReadLine(); //Read the account number from user as string 
+            if (!int.TryParse(accountNumberStr, out int accountNumber) || accountNumber < 100 || accountNumber > 1000) // Checking the input is a number also checks input is between 100-1000
             {
-                Console.WriteLine("Invalid account number. Please try again.");
+
+                Console.WriteLine("Invalid account number. Please try again."); 
+                return;
+            }
+            else if(bank.RetrieveAccount(accountNumber)!=null) // Checking whether the account is already exists
+
+            {
+                Console.WriteLine("Account number already exists. Please try another.");
                 return;
             }
 
             Console.Write("Enter Annual Interest Rate (should be less than 3.0%): \n");
-            string annualInterestRateStr = Console.ReadLine();
-            if (!double.TryParse(annualInterestRateStr, out double annualInterestRate) || annualInterestRate >= 3.0)
+            string annualInterestRateStr = Console.ReadLine(); // Reads user entered annual intrest
+            if (!double.TryParse(annualInterestRateStr, out double annualInterestRate) || annualInterestRate >= 3.0) //Check whether the input is a number and not exceeds 3
             {
                 Console.WriteLine("Invalid interest rate. Please try again.");
                 return;
@@ -58,23 +80,24 @@ namespace ATM_Application
 
             Console.Write("Enter Initial Balance: \n");
             string initialBalanceStr = Console.ReadLine();
-            if (!double.TryParse(initialBalanceStr, out double initialBalance))
+            if (!double.TryParse(initialBalanceStr, out double initialBalance)) //Check whether initial balance is number or decimal
             {
                 Console.WriteLine("Invalid initial balance. Please try again.");
                 return;
             }
 
-            Account newAccount = new Account(accountNumber, initialBalance, annualInterestRate, accountName);
-            bank.AddAccount(newAccount);
+            Account newAccount = new Account(accountNumber, initialBalance, annualInterestRate, accountName); // creating account instance
+            bank.AddAccount(newAccount); // adding account instance to bank class
             Console.WriteLine("============= Account created successfully! =============\n");
         }
 
-        static void SelectAccount()
+        static void SelectAccount() // To retrive the data of selected account
         {
             Console.Write("Enter the account number to select: \n");
             string accountNumberStr = Console.ReadLine();
             if (int.TryParse(accountNumberStr, out int accountNumber))
             {
+                //Retrive the account details with selected account number 
                 Account selectedAccount = bank.RetrieveAccount(accountNumber);
                 if (selectedAccount != null)
                 {
@@ -188,7 +211,6 @@ namespace ATM_Application
         public double AnnualInterestRate { get; set; }
         public double InitialBalance { get; set; }
         public string[] Transactions { get; set; }
-      
 
         public Account(int accountNumber, double initialBalance, double annualInterestRate, string accountName = "My Account")
         {
@@ -201,7 +223,7 @@ namespace ATM_Application
             TransactionCount = 1;
         }
 
-        public void AddTransaction(string transaction)    //ADDCOMMENT
+        public void AddTransaction(string transaction)
         {
             if (TransactionCount <= MaxTransactions)
             {
@@ -213,13 +235,13 @@ namespace ATM_Application
                 Console.WriteLine("Transaction limit reached. Cannot add more transactions.");
             }
         }
-    }// Class Account created
+    }
+
     public class Bank
     {
         private const int MaxAccounts = 100; // Maximum account limit set to 100
         private int accountCount;
         private Account[] accounts;
-      
 
         public Bank() // Class bank created
         {
@@ -245,7 +267,7 @@ namespace ATM_Application
             }
             else
             {
-                Console.WriteLine("Account limit reached. Cannot add more accounts."); 
+                Console.WriteLine("Account limit reached. Cannot add more accounts.");
             }
         }
 
