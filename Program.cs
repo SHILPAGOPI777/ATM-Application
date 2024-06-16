@@ -52,7 +52,7 @@ namespace ATM_Application
 
         static void CreateAccount() // Create new account procedures
         {
-            Console.Write("Enter Account Holder's Name: \n"); 
+            Console.Write("Enter Account Holder's Name: \n");
             string accountName = Console.ReadLine();// Read the account name from user
 
             Console.Write("Enter Account Number (Between 100 to 1000): \n"); //
@@ -60,10 +60,10 @@ namespace ATM_Application
             if (!int.TryParse(accountNumberStr, out int accountNumber) || accountNumber < 100 || accountNumber > 1000) // Checking the input is a number also checks input is between 100-1000
             {
 
-                Console.WriteLine("Invalid account number. Please try again."); 
+                Console.WriteLine("Invalid account number. Please try again.");
                 return;
             }
-            else if(bank.RetrieveAccount(accountNumber)!=null) // Checking whether the account is already exists
+            else if (bank.RetrieveAccount(accountNumber) != null) // Checking whether the account is already exists
 
             {
                 Console.WriteLine("Account number already exists. Please try another.");
@@ -99,7 +99,7 @@ namespace ATM_Application
             {
                 //Retrive the account details with selected account number 
                 Account selectedAccount = bank.RetrieveAccount(accountNumber);
-                if (selectedAccount != null)
+                if (selectedAccount != null) // Check if the account exists 
                 {
                     Console.WriteLine($"Welcome, {selectedAccount.AccountName}");
                     AccountMenu(selectedAccount);
@@ -115,7 +115,7 @@ namespace ATM_Application
             }
         }
 
-        static void AccountMenu(Account account)
+        static void AccountMenu(Account account) //To display the  Actions accociated with selected account 
         {
             while (true)
             {
@@ -148,17 +148,17 @@ namespace ATM_Application
             }
         }
 
-        static void CheckBalance(Account account)
+        static void CheckBalance(Account account) // To check current balance of the selected account. 
         {
             Console.WriteLine($"Current Balance: {account.InitialBalance}\n");
         }
 
-        static void Deposit(Account account)
+        static void Deposit(Account account) // To deposit amount to selected acccount 
         {
             Console.Write("Enter amount to deposit: ");
-            if (double.TryParse(Console.ReadLine(), out double amount))
+            if (double.TryParse(Console.ReadLine(), out double amount)) // Checking whether user input is number or decimal
             {
-                account.InitialBalance += amount;
+                account.InitialBalance += amount; // Adding the selected amount with the previous balance
                 account.AddTransaction($"Deposited: {amount}");
                 Console.WriteLine("Deposit successful!\n");
             }
@@ -168,14 +168,14 @@ namespace ATM_Application
             }
         }
 
-        static void Withdraw(Account account)
+        static void Withdraw(Account account)  // To withdraw amount from the account
         {
             Console.Write("Enter amount to withdraw: \n");
-            if (double.TryParse(Console.ReadLine(), out double amount))
+            if (double.TryParse(Console.ReadLine(), out double amount)) //Checking whether user input is number or decimal
             {
                 if (amount <= account.InitialBalance)
                 {
-                    account.InitialBalance -= amount;
+                    account.InitialBalance -= amount; // Substracting the input amount with the previous balance
                     account.AddTransaction($"Withdrew: {amount}");
                     Console.WriteLine("Withdrawal successful!\n");
                 }
@@ -190,7 +190,7 @@ namespace ATM_Application
             }
         }
 
-        static void DisplayTransactions(Account account)
+        static void DisplayTransactions(Account account) // Display trasncation history
         {
             Console.WriteLine("============= Transaction History =============");
             Console.WriteLine($"Annual Interest Rate: {account.AnnualInterestRate}%");
@@ -225,7 +225,7 @@ namespace ATM_Application
 
         public void AddTransaction(string transaction)
         {
-            if (TransactionCount <= MaxTransactions)
+            if (TransactionCount <= MaxTransactions) // Checking transactions reached maximum limit
             {
                 Transactions[TransactionCount] = transaction;
                 TransactionCount++;
